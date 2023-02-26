@@ -4,19 +4,20 @@ import { Ballot__factory } from "../typechain-types";
 dotenv.config();
 
 // To run this script:
-// yarn run ts-node --files scripts/GiveRightToVote.ts <BALLOT_ADDRESS_FROM_DEPLOYMENT> "voterAddress1" "voterAddress2" "voterAddressN"
+// yarn run ts-node --files scripts/Voting.ts <BALLOT_ADDRESS> <SELECTED_PROPOSAL OPTION 1/2/3>
 
-async function giveRightToVote() {
+async function voting() {
   const args = process.argv;
 
   // Store the params from terminal into variable
   const ballotAddress = args.slice(2, 3)[0];
-  const voters = args.slice(3);
+  const selectedProposal = args.slice(3, 4)[0];
 
   // Validation
   if (!ballotAddress || ballotAddress.length <= 0)
     throw new Error("Missing parameter: ballot address");
-  if (voters.length <= 0) throw new Error("Missing parameter: voters");
+  if (!selectedProposal)
+    throw new Error("Missing parameter: selected proposal");
 
   // get default provider from hardhat config
   const provider = ethers.provider;
@@ -37,17 +38,16 @@ async function giveRightToVote() {
   const balance = await signer.getBalance();
   console.log(`Wallet balance: ${balance} Wei`);
 
-  // pick develop ballot factory, attach the voters and console.log output
+  // pick develop ballot factory, attach a voter to vote his choice and console.log output
   const ballotContractFactory = new Ballot__factory(signer);
   const ballotContract = ballotContractFactory.attach(ballotAddress);
-  console.log(`Giving rights to vote to ballot with address ${ballotAddress}`);
-  for (let index = 0; index < voters.length; index++) {
-    console.log(`Giving right to vote to ${voters[index]}`);
-    await ballotContract.giveRightToVote(voters[index]);
-  }
+  console.log(`You voted for this proposal: ${selectedProposal}`);
+  const voted = await ballotContract.vote(selectedProposal);
+  const votedTxReceipt = await voted.wait();
+  console.log({ votedTxReceipt });
 }
 
-giveRightToVote().catch((error) => {
+voting().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });

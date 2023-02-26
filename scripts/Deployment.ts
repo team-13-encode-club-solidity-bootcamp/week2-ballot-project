@@ -15,11 +15,12 @@ function convertStringArrayToBytes32(array: string[]) {
 }
 
 async function deployment() {
-  // take argument from terminal
+  // Store the params from terminal into variable
   const args = process.argv;
   // console.log({ args });
   // return;
   const proposals = args.slice(2);
+  // Validation
   if (proposals.length <= 0) throw new Error("Missing parameter : proposals");
 
   // get default provider from hardhat config
@@ -28,6 +29,7 @@ async function deployment() {
 
   // import wallet
   const pkey = process.env.PRIVATE_KEY; // can change with mnemonic/private key
+  // Validation
   if (!pkey || pkey.length <= 0)
     throw new Error(
       "Missing environment : Private key, please check your .env file"
