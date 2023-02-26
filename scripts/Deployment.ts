@@ -4,7 +4,7 @@ import { Ballot__factory } from "../typechain-types";
 dotenv.config();
 
 // To run this script:
-// yarn run ts-node --files scripts/Deployment.ts "Option 1" "Option 2" "Option 3"
+// yarn run ts-node --files scripts/Deployment.ts "arg1" "arg2" "arg3"
 
 function convertStringArrayToBytes32(array: string[]) {
   const bytes32Array = [];
@@ -14,7 +14,7 @@ function convertStringArrayToBytes32(array: string[]) {
   return bytes32Array;
 }
 
-async function main() {
+async function deployment() {
   // take argument from terminal
   const args = process.argv;
   // console.log({ args });
@@ -22,8 +22,8 @@ async function main() {
   const proposals = args.slice(2);
   if (proposals.length <= 0) throw new Error("Missing parameter : proposals");
 
-  // connect with goerli testnet
-  const provider = ethers.getDefaultProvider("goerli");
+  // get default provider from hardhat config
+  const provider = ethers.provider;
   //   console.log({ provider });
 
   // import wallet
@@ -59,7 +59,7 @@ async function main() {
   console.log({ deployTxReceipt });
 }
 
-main().catch((error) => {
+deployment().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });

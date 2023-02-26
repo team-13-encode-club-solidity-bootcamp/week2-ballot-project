@@ -21,7 +21,7 @@ const WALLET_PRIVATE_KEY = process.env.PRIVATE_KEY;
 const config: HardhatUserConfig = {
   paths: { tests: "tests" },
   solidity: "0.8.17",
-  defaultNetwork: "localhost",
+  defaultNetwork: "goerli",
   networks: {
     localhost: {
       url: "http://127.0.0.1:8545",
