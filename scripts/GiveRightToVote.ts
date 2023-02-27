@@ -43,7 +43,9 @@ async function giveRightToVote() {
   console.log(`Giving rights to vote to ballot with address ${ballotAddress}`);
   for (let index = 0; index < voters.length; index++) {
     console.log(`Giving right to vote to ${voters[index]}`);
-    await ballotContract.giveRightToVote(voters[index]);
+    const rightToVote = await ballotContract.giveRightToVote(voters[index]);
+    const rightToVoteTxReceipt = await rightToVote.wait();
+    console.log({ rightToVoteTxReceipt });
   }
 }
 
