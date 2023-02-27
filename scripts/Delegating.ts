@@ -1,23 +1,22 @@
 import { ethers } from "hardhat";
-import * as dotenv from "dotenv";
 import { Ballot__factory } from "../typechain-types";
+import * as dotenv from "dotenv";
 dotenv.config();
 
-// To run this script:
-// yarn run ts-node --files scripts/Voting.ts <BALLOT_ADDRESS> <SELECTED_PROPOSAL_INDEX 0/1/2>
+// yarn run ts-node --files scripts/Delegating.ts <BALLOT_ADDRESS> <DELEGATE_ADDRESS>
 
-async function voting() {
+async function delegating() {
   const args = process.argv;
 
   // Store the params from terminal into variable
-  const ballotAddress = args.slice(2, 3)[0];
-  const selectedProposal = args.slice(3, 4)[0];
+  const ballotAddress = args.slice(2)?.[0];
+  const delegateAddress = args.slice(2)?.[1];
 
   // Validation
   if (!ballotAddress || ballotAddress.length <= 0)
     throw new Error("Missing parameter: ballot address");
-  if (!selectedProposal)
-    throw new Error("Missing parameter: selected proposal");
+  if (delegateAddress.length <= 0)
+    throw new Error("Missing parameter: delegate address");
 
   // get default provider from hardhat config
   const provider = ethers.provider;
@@ -38,16 +37,16 @@ async function voting() {
   const balance = await signer.getBalance();
   console.log(`Wallet balance: ${balance} Wei`);
 
-  // pick develop ballot factory, attach a voter to vote his choice and console.log output
+  // pick develop ballot factory, attach a voter to delegate his choice and console.log output
   const ballotContractFactory = new Ballot__factory(signer);
   const ballotContract = ballotContractFactory.attach(ballotAddress);
-  console.log(`You voted for this proposal: ${selectedProposal}`);
-  const voted = await ballotContract.vote(selectedProposal);
-  const votedTxReceipt = await voted.wait();
-  console.log({ votedTxReceipt });
+  const delegated = await ballotContract.delegate(delegateAddress);
+  const delegatedTxReceipt = await delegated.wait();
+  console.log(`Your vote has been delegated to ${delegateAddress}`);
+  console.log({ delegatedTxReceipt });
 }
 
-voting().catch((error) => {
+delegating().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
